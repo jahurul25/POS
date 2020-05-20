@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <title> {% block title %} Dashboard {% endblock %} </title>
+        {% load static %}  
+        {% load mathfilters %}  
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="utf-8">
+        <meta name="keywords" content="college erp, college software, college management software, college management system, school erp,school software, school management software, school management system, fees management system,library management system, time table management, accounts management software, hostel mess management software, exams result generation system, university management system, salary payroll software, education erp, institute erp, campus erp, university erp, higher education erp, campus administration, account management systems, student information systems, student registration systems, student admission system, student enrollment system, college management systems, institute management system, institution management system, admission management system, attendance management system, exam management system, digital library systems, transport management systems, store management system" />
+        <title>Admin Dashboard</title>
+        <link href="{% static 'posapp/simple-line-icons/simple-line-icons.min.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'posapp/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'posapp/bootstrap/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'posapp/bootstrap/css/components.min.css' %}" rel="stylesheet" id="style_components" type="text/css" />
+        <link href="{% static 'posapp/bootstrap/css/layout.min.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'posapp/bootstrap/css/darkblue.min.css' %}" rel="stylesheet" type="text/css" id="style_color" />
+        <link href="{% static 'posapp/bootstrap/css/main.css' %}" rel="stylesheet" type="text/css" id="style_color" />
+        <link href="{% static 'posapp/bootstrap/css/style.css' %}" rel="stylesheet" type="text/css" id="style_color" />
+        <link href="{% static 'posapp/bootstrap/css/alertbox.css' %}" rel="stylesheet" type="text/css" />
+        <link rel="shortcut icon" href="/static/commonapp/images/" /> 
+    </head>
+
+    <body class="page-header-fixed page-sidebar-closed-hide-logo page-content-white">
+    {% block body %}
+        <div class="page-wrapper">
+            <div class="page-header navbar navbar-fixed-top">
+                <div class="page-header-inner ">
+                    <div class="page-logo">
+                        <a href="/dashboard/">
+                            <img src="/static/posapp/images/logo/pos_logo.PNG" alt="Logo Here" class="logo-default"/> </a>
+                        <div class="menu-toggler sidebar-toggler">
+                            <span></span>
+                        </div>
+                    </div>
+
+                    <a href="javascript:;" class="menu-toggler responsive-toggler" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span></span>
+                    </a>
+                       
+                    <div class="site_header_title"> 
+                        <h3 class="site_title"> POS App </h3>  
+                    </div>
+                    <div class="top-menu">
+                            
+                        <ul class="nav navbar-nav pull-right">
+                                                       
+                            <li class="dropdown dropdown-quick-sidebar-toggler">
+                                <a href="/user-profile/" class="dropdown-toggle">
+                                    <span>Jahurul Islam</span>
+                                </a>
+                            </li>
+                                                       
+                            <li class="dropdown dropdown-quick-sidebar-toggler">
+                                <a href="/logout/" class="dropdown-toggle">
+                                    <i class="icon-logout"></i>
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+            </div>
+         
+            <div class="clearfix"> </div>
+       
+            <div class="page-container">
+                <div class="page-sidebar-wrapper">
+                    <div class="page-sidebar navbar-collapse collapse">
+                        <ul class="page-sidebar-menu  page-header-fixed" data-keep-expanded="false" data-auto-scroll="true" data-slide-speed="200">   
+                            <li class="sidebar-toggler-wrapper hide">
+                                <div class="sidebar-toggler">
+                                    <span></span>
+                                </div>
+                            </li>
+                           
+                            <li class="sidebar-search-wrapper">     
+                                <div class="sidebar-search"> 
+                                    <a href="javascript:;" class="remove">
+                                        <i class="icon-close"></i>
+                                    </a>
+                                    <div class="input-group">
+                                        <input style="color:#fff;" type="text" id="txt_search_box" class="form-control" placeholder="Search..." value="">
+                                        <span class="input-group-btn">
+                                            <a  href="" id="data_search_box" class="btn submit"></a>
+                                        </span>
+                                    </div>
+                                    <ul id="filter_result" class="page-sidebar-menu  page-header-fixed"> </ul>
+                                </div>
+                            </li>
+                            <li class="nav-item start active open">
+                                <a href="/dashboard/" class="nav-link nav-toggle">
+                                    <i class="fa fa-dashboard"></i>
+                                    <span class="title">Dashboard</span>
+                                    <span class="selected"></span>
+                                </a>
+                            </li>
+  
+
+                        <!--Left Side Menus-->
+                            <li class="nav-item">
+                                <a href="javascript:;" class="nav-link nav-toggle">
+                                    <i class="fa fa-stethoscope"></i>
+                                    <span class="title">Purchase</span>
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="sub-menu">
+                                    <li class="nav-item ">
+                                        <a href="/purchase-entry/" class="nav-link ">
+                                            <span class="title"> <i class="icon-settings"></i> Purchase Entry </span>
+                                        </a>
+                                    </li>                                    
+                                    <li class="nav-item ">
+                                        <a href="/inventory/" class="nav-link ">
+                                            <span class="title"> <i class="icon-settings"></i> Inventory </span>
+                                        </a>
+                                    </li>                                                                      
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="javascript:;" class="nav-link nav-toggle">
+                                    <i class="fa fa-stethoscope"></i>
+                                    <span class="title">Sales</span>
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="sub-menu">
+                                    <li class="nav-item ">
+                                        <a href="/purchase-entry/" class="nav-link ">
+                                            <span class="title"> <i class="icon-settings"></i> Sales Entry </span>
+                                        </a>
+                                    </li>                                                                      
+                                </ul>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="javascript:;" class="nav-link nav-toggle">
+                                    <i class="icon-settings"></i>
+                                    <span class="title">Settings</span>
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="sub-menu">
+                                    <li class="nav-item ">
+                                        <a href="/settings/country-list/" class="nav-link ">
+                                            <span class="title"> <i class="icon-settings"></i> Country List  </span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item ">
+                                        <a href="/settings/year-list/" class="nav-link ">
+                                            <span class="title"> <i class="icon-settings"></i> Year List </span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item ">
+                                        <a href="/settings/company-setup/" class="nav-link ">
+                                            <span class="title"> <i class="icon-settings"></i> Company Setup </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!--Left Side Menus-->
+                        </ul>
+                    </div>
+                </div>
+                <!-- END SIDEBAR -->
+                <!-- BEGIN CONTENT -->
+                <div class="page-content-wrapper">
+                    <!-- BEGIN CONTENT BODY -->
+                    <div class="page-content" style="background: ghostwhite;">
+                        {% block content %}
+                    
+                        {% endblock %}
+                    </div>
+                    <!-- END CONTENT BODY -->
+                </div>
+                <!-- END QUICK SIDEBAR -->
+            </div>
+
+            <div class="page-footer">
+                <div class="">
+                   <p style="margin:0px;text-align:center;color:#ccc;"> Designed & Developed By Jahurul Islam</p>
+                </div>
+                <div class="scroll-to-top">
+                    <i class="icon-arrow-up"></i>
+                </div>
+            </div>
+        </div>
+
+<script src="{% static 'posapp/bootstrap/js/jquery.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'posapp/bootstrap/js/bootstrap.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'posapp/bootstrap/js/morris.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'posapp/bootstrap/js/jquery.waypoints.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'posapp/bootstrap/js/jquery.counterup.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'posapp/bootstrap/js/app.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'posapp/bootstrap/js/layout.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'posapp/bootstrap/js/demo.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'posapp/bootstrap/js/sweetalert.min.js' %}" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+    $( document ).ready(function() {
+        //$($('span:contains("Select Language")')[1]).html('Bengali');;
+    });
+    
+    $("#txt_search_box").keyup(function(){
+        if($("#txt_search_box").val().length > 0)
+        {
+            var action_url = "/commonapp/data-search/";
+            $.ajax({
+                url: action_url,
+                type:'GET',
+                dataType:"json",
+                data : {
+                    'src_data': $("#txt_search_box").val()
+                },
+                success: function(data){
+                    $("#filter_result").html("");
+                    $.each(data, function(rowIndex, r) {
+                    $("#filter_result").append($("<li><a style='padding:7px 0px !important' href="+data[rowIndex].menuid_id__menu_url+" > <i class='fa fa-search'></i>  "+data[rowIndex].menuid_id__menu_name +"</a>"));
+                    });
+                },
+                error: function(data){     
+                }
+            });
+        }
+        else{
+            $("#filter_result").html("");
+        }
+    });
+
+    $("#txt_search_box2").keydown(function (e) {
+        $.ajax({
+            url: "/commonapp/data-search/",
+            data: {
+                'src_data': $("#txt_search_box").val(),
+            },
+            success: function (data) {
+                $("#filter_result").html("");
+                for (var i = 0; i < data.length; i++) {
+                    $("#filter_result").append($("<li><a style='padding:7px 0px !important' href="+data[i].menuid_id__menu_url+" > <i class='fa fa-search'></i>  "+data[rowIndex].menuid_id__menu_name +"</a>"));
+                }
+            }
+        });
+    });
+</script>
+    
+{% endblock %}
+</body>
+</html>

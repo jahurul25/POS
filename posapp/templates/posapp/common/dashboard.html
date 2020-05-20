@@ -1,0 +1,49 @@
+{% extends 'posapp/common/base.html' %}
+{% block title %} Admin Dashboard {% endblock %}
+{% load static %}
+{% load mathfilters %}
+{% block content %}
+
+<div class="portlet-body form">
+    <div class="row">
+        <div class="portlet light">
+            <table class="table table-striped table-bordered table-checkable order-column dataTable">
+                <tr>
+                    <td> 
+                        <div class="dashitem-box">
+                            <a href="/purchase-entry/">
+                                <i class="icon-settings"></i>
+                                <h3> Purchase Entry </h3>
+                            </a>
+                        </div>  
+                    </td>
+                    <td>
+                        <div class="dashitem-box">
+                            <a href="/sales-entry/">
+                                <i class="icon-users"></i>
+                                <h3> Sales Entry </h3>
+                            </a>
+                        </div>
+                    </td>
+                    <td> 
+                        <div class="dashitem-box">
+                            <a href=/inventory/">
+                                <i class="icon-credit-card"></i>
+                                <h3> Inventory </h3>
+                            </a>
+                        </div>
+                    </td>
+                    <td> 
+                        <div class="dashitem-box">
+                            <a href="/user-list/">
+                                <i class="icon-credit-card"></i>
+                                <h3> User List </h3>
+                            </a>
+                        </div>
+                    </td>
+                </tr> 
+            </table>
+    </div>
+</div> 
+
+{% endblock %}

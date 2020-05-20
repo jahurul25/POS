@@ -1,0 +1,26 @@
+
+<html>
+    <head>
+        <title>User Login</title>
+    </head>
+    <body>
+
+        <form method="POST" action="/login/"> {% csrf_token %}
+            <table>
+                <tr>
+                    <th>User Email</th>
+                    <td><input type="text" name="user_email" class="form-control"/></td>
+                </tr>
+                <tr>
+                    <th>Password</th>
+                    <td><input type="password" name="user_pass" class="form-control"/></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td> <input type="submit" value="Login" class="primary"/> </td>
+                </tr>
+            </table>
+        </form>
+
+    </body>
+</html>
