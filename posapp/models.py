@@ -48,4 +48,45 @@ class UserList(models.Model):
 
     def __str__(self):
         return self.user_full_name
+      
+class ProductCategory(models.Model):
+    cat_name        = models.CharField(max_length=150, unique=True)
+    added_date      = models.DateTimeField(auto_now_add=True)
+    status          = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.cat_name
+      
+class ProductBrand(models.Model):
+    brand_name      = models.CharField(max_length=150, unique=True)
+    added_date      = models.DateTimeField(auto_now_add=True)
+    status          = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.brand_name
+      
+class ProductInfo(models.Model):
+    product_cat     = models.ForeignKey(ProductCategory, on_delete=models.CASCADE)
+    product_brand   = models.ForeignKey(ProductBrand, on_delete=models.CASCADE)
+    product_name    = models.CharField(max_length=200, unique=True)
+    added_date      = models.DateTimeField(auto_now_add=True)
+    status          = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.product_name
+      
+class PurchaseInfo(models.Model):
+    purchase_invo   = models.IntegerField(default=0)
+    product_cat     = models.ForeignKey(ProductCategory, on_delete=models.CASCADE)
+    product_brand   = models.ForeignKey(ProductBrand, on_delete=models.CASCADE)
+    product_name    = models.ForeignKey(ProductInfo, on_delete=models.CASCADE) 
+    quantity        = models.IntegerField(default=0)
+    unit_price      = models.FloatField(default=0)
+    sales_price     = models.FloatField(default=0)
+    added_by        = models.ForeignKey(UserList, on_delete=models.CASCADE)
+    added_date      = models.DateTimeField(auto_now_add=True)
+    status          = models.BooleanField(default=True)
+
+    def __str__(self):
+        return str(self.product_name)
     

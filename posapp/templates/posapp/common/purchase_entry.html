@@ -6,9 +6,96 @@
 <div class="portlet-body form">
     <div class="row">
         <div class="portlet light">
+            <div class="page_header">
+                <div class="page_header_left">Purchase Entry</div>
+                <div class="page_header_right">
+                    <a href="/inventory/">Go to Inventory</a>
+                </div>
+            </div>
+
+            <table class="table table-bordered">
+                <tr>
+                    <th>Invoice</th>
+                    <td><input type="text" id="invoice_number" value="{{ purchase_invo }}" class="form-control" required/></td>
+                    <th>Category</th>
+                    <td>
+                        <select id="cat_name" class="form-control">
+                            {% for data in cat_list %}
+                                <option value="{{ data.pk }}"> {{ data.cat_name }} </option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <th>Brand</th>
+                    <td>
+                        <select id="brand_name" class="form-control">
+                            {% for data in brand_list %}
+                                <option value="{{ data.pk }}"> {{ data.brand_name }} </option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                <tr> 
+                    <th>Product Name</th>
+                    <td>
+                        <select id="product_name" class="form-control">
+                            {% for data in product_list %}
+                                <option value="{{ data.pk }}"> {{ data.product_name }} </option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <th>Unit Price</th>
+                    <td><input type="number" id="unit_price" value="0" class="form-control" required/></td>
+                    <th>Quantity</th>
+                    <td><input type="number" id="quantity" value="1" class="form-control" required/></td>
+                </tr>
+                <tr>
+                    <th>Sales Price</th>
+                    <td><input type="number" id="sales_price" value="0" class="form-control" required/></td>
+                    <th>Purchase Date</th>
+                    <td><input type="date" id="purchase_date" value="{{ current_date|date:"Y-m-d" }}" class="form-control"/></td>
+                    <td></td>
+                    <td><input type="button" id="btn_add_product" value="Add Product" class="btn btn-primary" /></td>
+                </tr>
+            </table>
+
+            <table id="tbl_product" class="table table-bordered">
+                <tr>
+                    <th>Category</th>
+                    <th>Brand</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Unite Price</th>
+                    <th>Sales Price</th>
+                    <th>Action</th>
+                </tr>
+            </table>
         </div>
     </div>
 </div>
+
+{% block js_script %}
+
+<script type="text/javascript">
+    $("#btn_add_product").click(function(){
+        var row = "<tr>";
+        row += "<td> "+ $("#cat_name option:selected").text() +" </td>";
+        row += "<td> "+ $("#brand_name option:selected").text() +" </td>";
+        row += "<td> "+ $("#product_name option:selected").text() +" </td>";
+        row += "<td> "+ $("#quantity").val() +" </td>";
+        row += "<td> "+ $("#unit_price").val() +" </td>";
+        row += "<td> "+ $("#sales_price").val() +" </td>";
+        row += "<td> <input type='button' id='remove_"+2+"' value='Remove'/> </td>";
+
+        $("#tbl_product").append(row);
+    })
+
+    $(document).on('click', '#remove_2', function(){ 
+        $(this).closest("#tbl_product tr").remove();
+    });
+</script>
+
+{% endblock %}
+
 
 
 {% endblock %}

@@ -1,5 +1,5 @@
 {% extends 'posapp/common/base.html' %}
-{% block title %} User List {% endblock %}
+{% block title %} Product Name List {% endblock %}
 {% load static %} 
 {% block content %}
 
@@ -7,9 +7,9 @@
     <div class="row">
         <div class="portlet light">
             <div class="page_header">
-                <div class="page_header_left">User List</div>
+                <div class="page_header_left">Product Name List </div>
                 <div class="page_header_right">
-                    <a href="/user-registration/">Add New User</a>
+                    <a href="/settings/add-product-name/">Add New Product Name</a>
                 </div>
             </div>
             {% if messages %}
@@ -19,22 +19,23 @@
                     {% endfor %}
                 </div>
             {% endif %}
+
             <table class="table table-bordered">
                 <tr>
                     <th class="text-center">SN</th>
-                    <th>User Name</th>
-                    <th>User Mobile</th>
-                    <th>User Email</th>
-                    <th>User Country</th>
+                    <th>Cagegory</th>
+                    <th>Brand</th>
+                    <th>Product Name</th>
+                    <th>Added Date</th>
                     <th>Status</th>
                 </tr>
-                {% for data in user_list %}
+                {% for data in product_name_list %}
                     <tr>
                         <td class="text-center">{{ forloop.counter }}</td>
-                        <td>{{ data.user_full_name }}</td>
-                        <td>{{ data.user_mobile }}</td>
-                        <td>{{ data.user_email }}</td>
-                        <td>{{ data.country_name }}</td>
+                        <td>{{ data.product_cat }}</td>
+                        <td>{{ data.product_brand }}</td>
+                        <td>{{ data.product_name }}</td>
+                        <td>{{ data.added_date|date:"d-M-y" }}</td>
                         <td> {% if data.status %} Acitve {% else %} Inactive {% endif %} </td>
                     </tr>
                 {% endfor %}
@@ -43,6 +44,7 @@
         </div>
     </div>
 </div>
+
 
 
 {% endblock %}

@@ -46,7 +46,7 @@
                                                        
                             <li class="dropdown dropdown-quick-sidebar-toggler">
                                 <a href="/user-profile/" class="dropdown-toggle">
-                                    <span>Jahurul Islam</span>
+                                    <span style="color:white;"> {{ request.session.user_full_name }} </span>
                                 </a>
                             </li>
                                                        
@@ -153,6 +153,26 @@
                                             <span class="title"> <i class="icon-settings"></i> Company Setup </span>
                                         </a>
                                     </li>
+                                    <li class="nav-item ">
+                                        <a href="/user-list/" class="nav-link ">
+                                            <span class="title"> <i class="icon-settings"></i> User List </span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item ">
+                                        <a href="/settings/product-category-list/" class="nav-link ">
+                                            <span class="title"> <i class="icon-settings"></i> Product Category </span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item ">
+                                        <a href="/settings/product-brand-list/" class="nav-link ">
+                                            <span class="title"> <i class="icon-settings"></i> Product Brand </span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item ">
+                                        <a href="/settings/product-name-list/" class="nav-link ">
+                                            <span class="title"> <i class="icon-settings"></i> Product Name List </span>
+                                        </a>
+                                    </li>
                                 </ul>
                             </li>
                             <!--Left Side Menus-->
@@ -192,6 +212,8 @@
 <script src="{% static 'posapp/bootstrap/js/layout.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'posapp/bootstrap/js/demo.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'posapp/bootstrap/js/sweetalert.min.js' %}" type="text/javascript"></script>
+
+{% block js_script %} {% endblock %}
 
 <script type="text/javascript">
 

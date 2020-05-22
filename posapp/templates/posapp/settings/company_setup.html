@@ -3,9 +3,29 @@
 {% load static %} 
 {% block content %}
 
+
 <div class="portlet-body form">
     <div class="row">
         <div class="portlet light">
+            <table class="table table-bordered">
+                <tr>
+                    <th class="text-center">SN</th>
+                    <th>Company Name</th>
+                    <th>Company Mobile</th>
+                    <th>Added Date</th>
+                    <th>Status</th>
+                </tr>
+                {% for data in company_info %}
+                    <tr>
+                        <td class="text-center">{{ forloop.counter }}</td>
+                        <td>{{ data.company_name }}</td>
+                        <td>{{ data.company_mobile }}</td>
+                        <td>{{ data.added_date|date:"d-M-y" }}</td>
+                        <td> {% if data.status %} Acitve {% else %} Inactive {% endif %} </td>
+                    </tr>
+                {% endfor %}
+            </table>
+            
         </div>
     </div>
 </div>

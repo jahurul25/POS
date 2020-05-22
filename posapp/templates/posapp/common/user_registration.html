@@ -1,0 +1,70 @@
+{% extends 'posapp/common/base.html' %}
+{% block title %} User Registration {% endblock %}
+{% load static %} 
+{% block content %}
+
+<div class="portlet-body form">
+    <div class="row">
+        <div class="portlet light">
+            <div class="page_header">
+                <div class="page_header_left">Add New User</div>
+                <div class="page_header_right">
+                    <a href="/user-list/">Go to User List</a>
+                </div>
+            </div>
+
+            <form method="POST">{% csrf_token %}
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Registration Year</th>
+                        <td>
+                            <select name="year_name" class="form-control">
+                                {% for data in year_list %}
+                                    <option value="{{ data.pk }}">{{ data.year }}</option>
+                                {% endfor %}    
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Country</th>
+                        <td>
+                            <select name="country_name" class="form-control">
+                                {% for data in country_list %}
+                                    <option value="{{ data.pk }}">{{ data.country_name }}</option>
+                                {% endfor %}    
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>User Full Name</th>
+                        <td><input type="text" name="user_full_name" class="form-control" required/></td>
+                    </tr>
+                    <tr>
+                        <th>Mobile</th>
+                        <td><input type="text" name="user_mobile" class="form-control" required/></td>
+                    </tr>                 
+                    <tr>
+                        <th>Email</th>
+                        <td><input type="text" name="user_email" class="form-control" required/></td>
+                    </tr>   
+                    <tr>
+                        <th>Password</th>
+                        <td><input type="password" name="user_pass" class="form-control" required/></td>
+                    </tr>   
+                    <tr>
+                        <th>Address</th>
+                        <td><textarea name="user_address" class="form-control"></textarea></td>
+                    </tr>   
+                    <tr>
+                        <td></td>
+                        <td><input type="submit" value="Add New User" class="btn btn-primary"/></td>
+                    </tr>              
+                </table>
+            </form>
+            
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

@@ -27,6 +27,20 @@
 
 }
 
+.page_header{  
+  padding: 10px;
+  border-bottom: 1px solid gray;
+  height: 38px;
+  margin-bottom: 10px;
+}
+.page_header_left{
+  float: left; width:50%; 
+}
+
+.page_header_right{
+  float: right; width:50%; text-align: right;
+}
+
 .card_data{
   border:1px solid #ccc;
   margin-bottom: 30px;

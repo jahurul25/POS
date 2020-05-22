@@ -3,9 +3,41 @@
 {% load static %} 
 {% block content %}
 
+
 <div class="portlet-body form">
     <div class="row">
         <div class="portlet light">
+            <table class="table table-bordered">
+                <tr>
+                    <th>Full Name</th>
+                    <td>{{ user.user_full_name }}</td> 
+                </tr>
+                <tr>
+                    <th>Country</th>
+                    <td>{{ user.country_name }}</td> 
+                </tr>
+                <tr>
+                    <th>Company</th>
+                    <td>{{ user.company_name }}</td> 
+                </tr>
+                <tr>
+                    <th>Mobie</th>
+                    <td>{{ user.user_mobile }}</td> 
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{ user.user_email }}</td> 
+                </tr>
+                <tr>
+                    <th>Address</th>
+                    <td>{{ user.user_address }}</td> 
+                </tr>
+                <tr>
+                    <th>Status</th>
+                    <td>{% if user.status %} Acitve {% else %} Inactive {% endif %}</td> 
+                </tr>
+            </table>
+            
         </div>
     </div>
 </div>

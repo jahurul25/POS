@@ -1,0 +1,34 @@
+{% extends 'posapp/common/base.html' %}
+{% block title %} Add New Category {% endblock %}
+{% load static %} 
+{% block content %}
+
+<div class="portlet-body form">
+    <div class="row">
+        <div class="portlet light">
+            <div class="page_header">
+                <div class="page_header_left">Add New Category</div>
+                <div class="page_header_right">
+                    <a href="/settings/product-category-list/">Go to Category List</a>
+                </div>
+            </div>
+
+            <form method="POST">{% csrf_token %}
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Category Name</th>
+                        <td><input type="text" name="cat_name" class="form-control" required/></td>
+                    </tr>  
+                    <tr>
+                        <td></td>
+                        <td><input type="submit" value="Add New Category" class="btn btn-primary"/></td>
+                    </tr>              
+                </table>
+            </form>
+            
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
