@@ -10,12 +10,10 @@ def subtract(value1, value2):
 
 
 @register.filter(name='bdt_to_usd')
-def bdt_to_usd(bdt):
-    r = requests.get('http://data.fixer.io/api/convert?access_key=29dcdbbac1fb5048f47fec7c7a05b5cb&from=BDT&to=USD&amount="'+bdt+'"')
-    # usd = r.json()["rates"]["USD"]
-    usd = r.json()
-    
-    print("rate: ", usd)
-    return usd
-
-
+def bdt_to_usd(sub_total):
+    response = requests.post('http://data.fixer.io/api/latest?access_key=e7546ef7cada53aeea71524d9176e113&format=1') 
+    if response.status_code == 200:
+        data = response.json()
+        usd = round((sub_total/data["rates"]["BDT"])/data["rates"]["USD"]) 
+        return usd 
+    else: sub_total

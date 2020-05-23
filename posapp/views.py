@@ -24,7 +24,7 @@ def user_login(request):
             if chk_user_login:
                 request.session["userid"] = chk_user_login.pk
                 request.session["companyid"] = chk_user_login.company_name_id
-                request.session["user_county"] = chk_user_login.country_name.country_name
+                request.session["user_country"] = chk_user_login.country_name.country_name
                 request.session["user_full_name"] = chk_user_login.user_full_name
                 return redirect("/dashboard/")
             else:
@@ -230,7 +230,7 @@ def sales_entry(request):
                 invoice_number = 100001    
              
             vat  = 5
-            if request.session["user_county"] == "USA":
+            if request.session["user_country"] == "USA":
                 vat = 7
                  
             context = {
@@ -265,6 +265,30 @@ def sales_list(request):
                 "product_list": product_list,
             }
             return render(request, "posapp/common/sales_list.html", context)
+    else:
+        return redirect("user_logout") 
+    
+    
+def sales_order_list(request): 
+    if request.session["userid"]: 
+        if request.method == "GET": 
+            sales_list = models.SalesInfo.objects.order_by("-sales_invo")
+            product_list  = models.ProductInfo.objects.filter(status=True)
+            context = { 
+                "sales_list": sales_list,
+                "product_list": product_list,
+            }
+            return render(request, "posapp/common/sales_order_list.html", context)
+        else: 
+            product_name  = int(request.POST["product_name"])
+            sales_list = models.SalesInfo.objects.filter(product_name_id = product_name).order_by("-sales_invo")
+            product_list  = models.ProductInfo.objects.filter(status=True)
+            context = { 
+                "product_name": product_name,
+                "sales_list": sales_list,
+                "product_list": product_list,
+            }
+            return render(request, "posapp/common/sales_order_list.html", context)
     else:
         return redirect("user_logout") 
     
@@ -338,19 +362,24 @@ def sales_entry_by_ajax(request):
             product_brand   = request.POST.get("product_brand")
             product_name    = request.POST.get("product_name")
             quantity        = request.POST.get("quantity")
-            unit_price      = request.POST.get("unit_price") 
+            unit_price      = request.POST.get("unit_price").strip().split(" ") 
             sales_invo      = request.POST.get("sales_invo") 
-            total_vat       = 5             
-                         
+            
+            if request.session["user_country"] == "USA":
+                total_vat       = ((float(unit_price[1]) * float(quantity)) * 7.0)/100
+            else:    
+                total_vat       = ((float(unit_price[1]) * float(quantity)) * 5.0)/100              
+                             
             models.SalesInfo.objects.create(
                 product_cat_id = product_cat, product_brand_id = product_brand, product_name_id = product_name, quantity = quantity,
-                unit_price = unit_price, total_vat = total_vat, sales_invo = sales_invo, sales_by_id = request.session["userid"]
+                unit_price = unit_price[1], total_vat = total_vat, sales_invo = sales_invo, sales_by_id = request.session["userid"]
             )
-            
-            chk_exist = models.ProductInventory.objects.filter(product_cat_id = product_cat, product_brand_id = product_brand, product_name_id = product_name).first()
-            if chk_exist:
-                models.ProductInventory.objects.filter(pk = chk_exist.pk).update(current_quantity = F("current_quantity")-quantity)
-                return JsonResponse("Success", safe=False)
+            return JsonResponse("Success", safe=False)
+        
+            # chk_exist = models.ProductInventory.objects.filter(product_cat_id = product_cat, product_brand_id = product_brand, product_name_id = product_name).first()
+            # if chk_exist:
+            #     models.ProductInventory.objects.filter(pk = chk_exist.pk).update(current_quantity = F("current_quantity")-quantity)
+            #     return JsonResponse("Success", safe=False)
     else:
         return redirect("user_logout")   
     
@@ -366,20 +395,17 @@ def get_product_salse_price_by_ajax(request):
         else:
             sales_price = 0
             
-        r = requests.get('http://data.fixer.io/api/convert?access_key=8cac677dfa22a4582dac4b8fb1d86817&from=BDT&to=USD&amount="'+str(500)+'"')
-        # usd = r.json()["rates"]["USD"]
-        usd = r.json()    
-        print("usd: ", usd)
-            
-        custom_tags.bdt_to_usd(sales_price)    
-        
-        return JsonResponse(str(sales_price), safe=False) 
+        if request.session["user_country"] == "USA":    
+            sales_price = custom_tags.bdt_to_usd(sales_price) 
+            return JsonResponse(str(sales_price), safe=False) 
+        else:
+            return JsonResponse(str(sales_price), safe=False) 
     
 def discount_calculation_by_ajax(request):
     if request.is_ajax(): 
-        sub_total  = request.POST.get("sub_total") 
-        current_month = timezone.now().date()
-        get_discount = models.DiscountInfo.objects.filter(from_month__lte = current_month, to_month__gte = current_month, country_name__country_name = request.session["user_county"], from_amount__lte = sub_total, status=True).order_by("-from_amount").first()
+        sub_total  = request.POST.get("sub_total")  
+        current_month = datetime.now().date()
+        get_discount = models.DiscountInfo.objects.filter(from_month__lte = current_month, to_month__gte = current_month, country_name__country_name = request.session["user_country"], from_amount__lte = sub_total, status=True).order_by("-from_amount").first()
 
         if get_discount:
             discount = get_discount.discount

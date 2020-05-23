@@ -24,6 +24,7 @@ urlpatterns = [
     path('purchase-list/', views.purchase_list, name="purchase_list"),
     path('sales-entry/', views.sales_entry, name="sales_entry"),
     path('sales-list/', views.sales_list, name="sales_list"),
+    path('sales-order-list/', views.sales_order_list, name="sales_order_list"),
     path('inventory/', views.inventory, name="inventory"),
     path('settings/discount-info/', views.discount_info, name="discount_info"),
     

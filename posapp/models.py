@@ -101,6 +101,7 @@ class SalesInfo(models.Model):
     total_vat       = models.FloatField(default=0)  
     sales_by        = models.ForeignKey(UserList, on_delete=models.CASCADE)
     sales_date      = models.DateTimeField(auto_now_add=True)
+    sales_complete  = models.BooleanField(default=False)
     status          = models.BooleanField(default=True)
 
     def __str__(self):
@@ -129,4 +130,15 @@ class DiscountInfo(models.Model):
 
     def __str__(self):
         return str(self.discount)
+      
+# class GiftCard(models.Model):  
+#     from_month       = models.DateTimeField(auto_now_add=False)
+#     to_month         = models.DateTimeField(auto_now_add=False)
+#     from_amount      = models.IntegerField(default=0)   
+#     to_amount        = models.IntegerField(default=0)   
+#     discount         = models.IntegerField(default=0)   
+#     status           = models.BooleanField(default=True)
+
+#     def __str__(self):
+#         return str(self.discount)
     

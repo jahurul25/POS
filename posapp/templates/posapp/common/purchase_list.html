@@ -1,6 +1,7 @@
 {% extends 'posapp/common/base.html' %}
 {% block title %} Product Purchase List {% endblock %}
 {% load static %} 
+{% load custom_tags %} 
 {% block content %}
 
 
@@ -51,8 +52,8 @@
                         <td>{{ data.product_name }}</td>
                         <td class="text-center">{{ data.quantity }}</td>
                         <td>
-                            {% if request.session.user_county == "USA" %}
-                                ${{ data.unit_price }}
+                            {% if request.session.user_country == "USA" %}
+                                ${{ data.unit_price|bdt_to_usd }}
                             {% else %}
                                 BDT {{ data.unit_price }}
                             {% endif %}   

@@ -1,6 +1,7 @@
 {% extends 'posapp/common/base.html' %}
 {% block title %} Product Sales List {% endblock %}
 {% load static %} 
+{% load mathfilters %}
 {% block content %}
 
 
@@ -39,6 +40,8 @@
                     <th>Product Name</th>
                     <th class="text-center">Quantity</th>
                     <th>Unit Price</th>
+                    <th>Vat</th>
+                    <th>Total Price</th>
                     <th>Added Date</th>
                     <th>Sales By</th>
                 </tr>
@@ -57,6 +60,20 @@
                                 BDT {{ data.unit_price }}
                             {% endif %}   
                         </td>
+                        <td>
+                            {% if request.session.user_county == "USA" %}
+                                ${{ data.total_vat }}
+                            {% else %}
+                                BDT {{ data.total_vat }}
+                            {% endif %}   
+                        </td>
+                        <td>
+                            {% if request.session.user_county == "USA" %}
+                                ${{ data.unit_price|mul:data.quantity|add:data.total_vat }}
+                            {% else %}
+                                BDT {{ data.unit_price|mul:data.quantity|add:data.total_vat }}
+                            {% endif %}   
+                        </td> 
                         <td>{{ data.sales_date|date:"d-M-y" }}</td>
                         <td> {{ data.sales_by }} </td>
                     </tr>

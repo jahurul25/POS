@@ -162,18 +162,18 @@
 
     function price_calculation(){
         var sub_total=0;
-        $("#tbl_product .tr_item").each(function() {
-            sub_total += parseInt($(this).find(".total_price").html());
+        $("#tbl_product .tr_item").each(function() { 
+            sub_total += parseInt($(this).find(".total_price").html());             
         })
         
         discount_calculation(sub_total);
 
-        $("#th_sub_total").html("Sub Total: "+ sub_total);
+        $("#th_sub_total").html("Sub Total: " + currency+ " "+ sub_total);
         $("#th_vat").html("Vat: "+ $("#vat").val()+"%");
 
         var sub_total_with_discount = ((sub_total * parseInt($("#hid_discount").val()))/100)+sub_total;
         var grand_total = ((sub_total_with_discount * parseInt($("#vat").val()))/100)+sub_total_with_discount;
-        $("#th_grand_total").html("Grand Total: "+grand_total);
+        $("#th_grand_total").html("Grand Total: " + currency +" "+grand_total);
 
         if(sub_total == 0){
             $("#tr_footer").remove();
@@ -202,7 +202,7 @@
         var qt = parseInt($(this).closest("tr").find(".quantity").html())+1;
         $(this).closest("tr").find(".quantity").html(qt);
 
-        var total_price = parseInt($(this).closest("tr").find(".unit_price").html())*qt;
+        var total_price = parseInt($(this).closest("tr").find(".unit_price").html().match(/\d+/))*qt;
         $(this).closest("tr").find(".total_price").html(total_price);
 
         price_calculation();
@@ -213,7 +213,7 @@
         if(qt>=1){
             $(this).closest("tr").find(".quantity").html(qt);
 
-            var total_price = parseInt($(this).closest("tr").find(".unit_price").html())*qt;
+            var total_price = parseInt($(this).closest("tr").find(".unit_price").html().match(/\d+/))*qt;
             $(this).closest("tr").find(".total_price").html(total_price);
 
             price_calculation();

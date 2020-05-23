@@ -1,0 +1,104 @@
+{% extends 'posapp/common/base.html' %}
+{% block title %} Sales Order List {% endblock %}
+{% load static %} 
+{% load mathfilters %}
+{% block content %}
+
+
+<div class="portlet-body form">
+    <div class="row">
+        <div class="portlet light">
+            <div class="page_header">
+                <div class="page_header_left">Sales Order List</div>
+                <div class="page_header_right">
+                    <a href="/inventory/">Add to Inventory</a>
+                </div>
+            </div>
+            
+            <form method="POST">{% csrf_token %}
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Product Name</th>
+                        <td>
+                            <select name="product_name" class="form-control">
+                                {% for data in product_list %}
+                                    <option value="{{ data.pk }}" {% if data.pk == product_name %} selected {% endif %}> {{ data.product_name }} </option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td><input type="submit" value="Search" class="btn btn-primary"/></td>
+                    </tr>
+                </table>
+            </form>
+
+            <table class="table table-bordered">
+                <tr> 
+                    <th>Invoice</th>
+                    <th>Category</th>
+                    <th>Brand</th>
+                    <th>Product Name</th>
+                    <th class="text-center">Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Vat</th>
+                    <th>Total Price</th>
+                    <th>Added Date</th>
+                    <th>Sales By</th> 
+                </tr>
+                {% regroup sales_list by sales_invo as sales_order %} 
+                {% for group in sales_order %}
+                    <tr> 
+                        <td rowspan="{{ group.list|length|add:2 }}">{{ group.grouper }}</td>
+                        {% for data in group.list %}
+                            <tr>
+                                <td>{{ data.product_cat }}</td>
+                                <td>{{ data.product_brand }}</td>
+                                <td>{{ data.product_name }}</td>
+                                <td>{{ data.quantity }}</td>
+                                <td>
+                                    {% if request.session.user_county == "USA" %}
+                                        ${{ data.unit_price }}
+                                    {% else %}
+                                        BDT {{ data.unit_price }}
+                                    {% endif %}   
+                                </td>
+                                <td>
+                                    {% if request.session.user_county == "USA" %}
+                                        ${{ data.total_vat }}
+                                    {% else %}
+                                        BDT {{ data.total_vat }}
+                                    {% endif %}   
+                                </td>
+                                <td>
+                                    {% if request.session.user_county == "USA" %}
+                                        ${{ data.unit_price|mul:data.quantity|add:data.total_vat }}
+                                    {% else %}
+                                        BDT {{ data.unit_price|mul:data.quantity|add:data.total_vat }}
+                                    {% endif %}   
+                                </td> 
+                                <td>{{ data.sales_date|date:"d-M-y" }}</td>
+                                <td> {{ data.sales_by }} </td>
+                            </tr>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td><a href="/{{ group.grouper }}/confirm-sales-order/" style="border: 1px solid gray; padding:5px;">Confirm Order</a></td>
+                        <td><a href="/{{ group.grouper }}/update-sales-order/" style="border: 1px solid gray; padding:5px;">Update Order</a></td>
+                        <td>
+                            <a href="/{{ group.grouper }}/cancel-sales-order/" style="border: 1px solid gray; padding:5px;">Cancel Order</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+            
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
