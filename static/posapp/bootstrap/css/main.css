@@ -41,6 +41,10 @@
   float: right; width:50%; text-align: right;
 }
 
+.remove_item:hover {
+  cursor:pointer;
+}
+
 .card_data{
   border:1px solid #ccc;
   margin-bottom: 30px;

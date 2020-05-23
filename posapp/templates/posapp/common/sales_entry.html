@@ -1,14 +1,275 @@
 {% extends 'posapp/common/base.html' %}
-{% block title %} Salse Entry {% endblock %}
+{% block title %} Sales Entry {% endblock %}
 {% load static %} 
 {% block content %}
 
 <div class="portlet-body form">
     <div class="row">
         <div class="portlet light">
+            <div class="page_header">
+                <div class="page_header_left">Sales Entry</div>
+                <div class="page_header_right">
+                    <a href="/inventory/">Go to Inventory</a>
+                </div>
+            </div>
+
+            <table class="table table-bordered">
+                <tr>
+                    <th>Invoice</th>
+                    <td><input type="text" id="sales_invo" value="{{ sales_invo }}" class="form-control" required/></td>
+                    <th>Category</th>
+                    <td>
+                        <select id="product_cat" class="form-control">
+                            {% for data in cat_list %}
+                                <option value="{{ data.pk }}"> {{ data.cat_name }} </option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <th>Brand</th>
+                    <td>
+                        <select id="product_brand" class="form-control">
+                            {% for data in brand_list %}
+                                <option value="{{ data.pk }}"> {{ data.brand_name }} </option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                <tr> 
+                    <th>Product Name</th>
+                    <td>
+                        <select id="product_name" class="form-control">
+                            <option value="0">--Select Product--</option> 
+                            {% for data in product_list %}
+                                <option value="{{ data.pk }}"> {{ data.product_name }} </option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <th>Unit Price</th>
+                    <td><input type="number" id="unit_price" value="0" class="form-control" required readonly/></td>
+                    <th>Quantity</th>
+                    <td><input type="number" id="quantity" value="0" class="form-control" required/></td>
+                </tr>
+                <tr>
+                    <td> <input type="hidden" value="{{ vat }}" id="vat"/> </td>
+                    <td> <input type="hidden" value="0" id="hid_discount"/> </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <input type="button" id="btn_add_product" value="Add to Cart" class="btn btn-primary" />
+                    </td>
+                </tr>
+            </table>
+
+            <table id="tbl_product" class="table table-bordered">
+                <tr>
+                    <th>Category</th>
+                    <th>Brand</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Unite Price</th>
+                    <th>Total Price</th>
+                    <th>Action</th>
+                </tr>
+            </table>
         </div>
     </div>
 </div>
+
+{% block js_script %}
+
+<script type="text/javascript">
+    var currency = "BTD";
+
+    $("#product_name").change(function(){
+        $.ajax({
+            url: '/ajax/get-product-salse-price/',
+            method: "GET",
+            data: {
+                'product_id': this.value,
+                'product_cat': $("#product_cat option:selected").val(),
+                'product_brand': $("#product_brand option:selected").val()
+            },
+            dataType: 'json',
+            success: function (data) {
+                $("#unit_price").val(data);
+            }
+        });   
+    })
+    
+    $("#btn_add_product").click(function(){
+        if($("#vat").val() == "7")
+        {
+            currency = "$";
+        }
+
+        if($("#unit_price").val() == "0" || $("#quantity").val() == "0" || $("#sales_price").val() == "0")
+        {
+            alert("Input quantity, unite price.")
+        }
+        else{
+            var row = "<tr class='tr_item'>";
+            row += "<td class='cat_name' id='"+$("#product_cat option:selected").val()+"'> "+ $("#product_cat option:selected").text() +" </td>";
+            row += "<td class='brand_name' id='"+$("#product_brand option:selected").val()+"'> "+ $("#product_brand option:selected").text() +" </td>";
+            row += "<td class='product_name' id='"+$("#product_name option:selected").val()+"'> "+ $("#product_name option:selected").text() +" </td>";
+            row += "<td class='quantity'> "+ $("#quantity").val() +" </td>";
+            row += "<td class='unit_price'> "+ currency + " "+ $("#unit_price").val() +" </td>";
+            row += "<td class='total_price'> "+ parseInt($("#unit_price").val())*parseInt($("#quantity").val()) +" </td>";
+            row += "<td style='font-size:22px;'> <span id='remove_item'> <i class='fa fa-window-close' aria-hidden='true'></i></span>";
+            row +=" | <span id='add_item'> <i class='fa fa-plus-square' aria-hidden='true'></i></span>"
+            row +=" | <span id='minus_item'> <i class='fa fa-minus-square' aria-hidden='true'></i></span> </td> </tr>"
+
+            if($('#tbl_product tr').length == 1){
+                $("#tbl_product").append(row);
+            }
+            else{
+                $("#tbl_product tr").last().before(row);
+            }
+                        
+            if($('#tr_footer').length == 0){
+                var footer = "<tr id='tr_footer'>";
+                footer += "<th id='th_sub_total'> </th>"
+                footer += "<th id='th_discount'> Discount: 0% </th>"
+                footer += "<th id='th_vat'> </th>"
+                footer += "<th id='th_grand_total'> </th>"
+                footer += "<th> </th>"
+                footer += "<th> </th>"
+                footer += "<th> <input type='button' id='btn_sales_confirm' value='Sales Order' class='btn btn-success' /> </th>"
+                $("#tbl_product").append(footer);
+	        }
+            
+            price_calculation();
+
+            $("#quantity").val(0); 
+        }
+    })
+
+    function discount_calculation(sub_total){
+        $.ajax({
+            url: '/ajax/discount-calculation/',
+            method: "POST",
+            data: {
+                'sub_total': sub_total,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+            dataType: 'json',
+            success: function (data) {
+                $("#th_discount").html("Discount: "+data+"%");
+                $("#hid_discount").val(data);
+            }
+        }); 
+    }
+
+    function price_calculation(){
+        var sub_total=0;
+        $("#tbl_product .tr_item").each(function() {
+            sub_total += parseInt($(this).find(".total_price").html());
+        })
+        
+        discount_calculation(sub_total);
+
+        $("#th_sub_total").html("Sub Total: "+ sub_total);
+        $("#th_vat").html("Vat: "+ $("#vat").val()+"%");
+
+        var sub_total_with_discount = ((sub_total * parseInt($("#hid_discount").val()))/100)+sub_total;
+        var grand_total = ((sub_total_with_discount * parseInt($("#vat").val()))/100)+sub_total_with_discount;
+        $("#th_grand_total").html("Grand Total: "+grand_total);
+
+        if(sub_total == 0){
+            $("#tr_footer").remove();
+        }
+    }
+
+    $(document).on('click', '#remove_item', function(){ 
+        $(this).closest("#tbl_product tr").remove();
+
+        price_calculation();
+    });
+
+    $("#quantity").click(function(){
+        $("#quantity").select();
+    })
+
+    $("#unit_price").click(function(){
+        $("#unit_price").select();
+    })
+
+    $("#sales_price").click(function(){
+        $("#sales_price").select();
+    })
+
+    $(document).on('click', '#add_item', function(){ 
+        var qt = parseInt($(this).closest("tr").find(".quantity").html())+1;
+        $(this).closest("tr").find(".quantity").html(qt);
+
+        var total_price = parseInt($(this).closest("tr").find(".unit_price").html())*qt;
+        $(this).closest("tr").find(".total_price").html(total_price);
+
+        price_calculation();
+    });
+
+    $(document).on('click', '#minus_item', function(){ 
+        var qt = parseInt($(this).closest("tr").find(".quantity").html())-1;
+        if(qt>=1){
+            $(this).closest("tr").find(".quantity").html(qt);
+
+            var total_price = parseInt($(this).closest("tr").find(".unit_price").html())*qt;
+            $(this).closest("tr").find(".total_price").html(total_price);
+
+            price_calculation();
+        }
+        else{
+            alert("Quantity can't 0");
+        }
+    });
+
+    $(document).on('click', '#btn_sales_confirm', function(){ 
+        if(confirm("Are you sure want to sales?") == true){
+            var status = true;
+            $("#tbl_product .tr_item").each(function() {
+                var product_cat = $(this).find(".cat_name").attr("id"); 
+                var product_brand = $(this).find(".brand_name").attr("id"); 
+                var product_name = $(this).find(".product_name").attr("id"); 
+                var quantity = $(this).find(".quantity").html(); 
+                var unit_price = $(this).find(".unit_price").html();  
+                var sales_invo = $("#sales_invo").val();  
+                
+                $.ajax({
+                    url: '/ajax/sales-entry/',
+                    method: "POST",
+                    data: {
+                        'product_cat': product_cat,
+                        'product_brand': product_brand,
+                        'product_name': product_name,
+                        'quantity': quantity,
+                        'unit_price': unit_price, 
+                        'sales_invo': sales_invo, 
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data == "Success") {
+                            status = true;
+                        }
+                        else{
+                            status = false;
+                        }
+                    }
+                });  
+            });
+            if(status){
+                alert("Sales Successful");
+            }
+            else{
+                alert("Sales Not Successful");
+            }
+        }
+    })
+
+</script>
+
+{% endblock %}
+
 
 
 {% endblock %}

@@ -1,7 +1,6 @@
 {% extends 'posapp/common/base.html' %}
-{% block title %} Product Inventory {% endblock %}
+{% block title %} Product Sales List {% endblock %}
 {% load static %} 
-{% load custom_tags %}
 {% block content %}
 
 
@@ -9,9 +8,9 @@
     <div class="row">
         <div class="portlet light">
             <div class="page_header">
-                <div class="page_header_left">Inventory List</div>
+                <div class="page_header_left">Product Sales List</div>
                 <div class="page_header_right">
-                    <a href="/sales-entry/">Go to Sales Entry</a>
+                    <a href="/inventory/">Add to Inventory</a>
                 </div>
             </div>
             
@@ -33,23 +32,33 @@
 
             <table class="table table-bordered">
                 <tr>
-                    <th class="text-center">SN</th> 
+                    <th class="text-center">SN</th>
+                    <th>Invoice</th>
                     <th>Category</th>
                     <th>Brand</th>
                     <th>Product Name</th>
-                    <th class="text-center">Total Quantity</th>
-                    <th class="text-center">Current Quantity</th>
-                    <th class="text-center">Sales Quantity</th> 
+                    <th class="text-center">Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Added Date</th>
+                    <th>Sales By</th>
                 </tr>
-                {% for data in inventory_list %}
+                {% for data in sales_list %}
                     <tr>
-                        <td class="text-center">{{ forloop.counter }}</td> 
+                        <td class="text-center">{{ forloop.counter }}</td>
+                        <td>{{ data.sales_invo }}</td>
                         <td>{{ data.product_cat }}</td>
                         <td>{{ data.product_brand }}</td>
                         <td>{{ data.product_name }}</td>
-                        <td class="text-center">{{ data.total_quantity }}</td>
-                        <td class="text-center">{{ data.current_quantity }}</td> 
-                        <td class="text-center">{{ data.total_quantity|subtract:data.current_quantity }}</td> 
+                        <td class="text-center">{{ data.quantity }}</td>
+                        <td>
+                            {% if request.session.user_county == "USA" %}
+                                ${{ data.unit_price }}
+                            {% else %}
+                                BDT {{ data.unit_price }}
+                            {% endif %}   
+                        </td>
+                        <td>{{ data.sales_date|date:"d-M-y" }}</td>
+                        <td> {{ data.sales_by }} </td>
                     </tr>
                 {% endfor %}
             </table>

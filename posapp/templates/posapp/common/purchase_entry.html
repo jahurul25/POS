@@ -7,7 +7,7 @@
     <div class="row">
         <div class="portlet light">
             <div class="page_header">
-                <div class="page_header_left">Purchase Entry</div>
+                <div class="page_header_left">Product Entry</div>
                 <div class="page_header_right">
                     <a href="/inventory/">Go to Inventory</a>
                 </div>
@@ -16,10 +16,10 @@
             <table class="table table-bordered">
                 <tr>
                     <th>Invoice</th>
-                    <td><input type="text" id="invoice_number" value="{{ purchase_invo }}" class="form-control" required/></td>
+                    <td><input type="text" id="purchase_invo" value="{{ purchase_invo }}" class="form-control" required/></td>
                     <th>Category</th>
                     <td>
-                        <select id="cat_name" class="form-control">
+                        <select id="product_cat" class="form-control">
                             {% for data in cat_list %}
                                 <option value="{{ data.pk }}"> {{ data.cat_name }} </option>
                             {% endfor %}
@@ -27,7 +27,7 @@
                     </td>
                     <th>Brand</th>
                     <td>
-                        <select id="brand_name" class="form-control">
+                        <select id="product_brand" class="form-control">
                             {% for data in brand_list %}
                                 <option value="{{ data.pk }}"> {{ data.brand_name }} </option>
                             {% endfor %}
@@ -46,7 +46,7 @@
                     <th>Unit Price</th>
                     <td><input type="number" id="unit_price" value="0" class="form-control" required/></td>
                     <th>Quantity</th>
-                    <td><input type="number" id="quantity" value="1" class="form-control" required/></td>
+                    <td><input type="number" id="quantity" value="0" class="form-control" required/></td>
                 </tr>
                 <tr>
                     <th>Sales Price</th>
@@ -54,7 +54,10 @@
                     <th>Purchase Date</th>
                     <td><input type="date" id="purchase_date" value="{{ current_date|date:"Y-m-d" }}" class="form-control"/></td>
                     <td></td>
-                    <td><input type="button" id="btn_add_product" value="Add Product" class="btn btn-primary" /></td>
+                    <td>
+                        <input type="button" id="btn_add_product" value="Add to Cart" class="btn btn-primary" />
+                        <input type="button" id="btn_purchase_confirm" value="Purchase Confirm" class="btn btn-success" />
+                    </td>
                 </tr>
             </table>
 
@@ -77,21 +80,93 @@
 
 <script type="text/javascript">
     $("#btn_add_product").click(function(){
-        var row = "<tr>";
-        row += "<td> "+ $("#cat_name option:selected").text() +" </td>";
-        row += "<td> "+ $("#brand_name option:selected").text() +" </td>";
-        row += "<td> "+ $("#product_name option:selected").text() +" </td>";
-        row += "<td> "+ $("#quantity").val() +" </td>";
-        row += "<td> "+ $("#unit_price").val() +" </td>";
-        row += "<td> "+ $("#sales_price").val() +" </td>";
-        row += "<td> <input type='button' id='remove_"+2+"' value='Remove'/> </td>";
+        if($("#quantity").val() == "0" || $("#quantity").val() == "0" || $("#sales_price").val() == "0")
+        {
+            alert("Input quantity, unite price and sales price.")
+        }
+        else{
+            var row = "<tr class='tr_item'>";
+            row += "<td class='cat_name' id='"+$("#product_cat option:selected").val()+"'> "+ $("#product_cat option:selected").text() +" </td>";
+            row += "<td class='brand_name' id='"+$("#product_brand option:selected").val()+"'> "+ $("#product_brand option:selected").text() +" </td>";
+            row += "<td class='product_name' id='"+$("#product_name option:selected").val()+"'> "+ $("#product_name option:selected").text() +" </td>";
+            row += "<td class='quantity'> "+ $("#quantity").val() +" </td>";
+            row += "<td class='unit_price'> "+ $("#unit_price").val() +" </td>";
+            row += "<td class='sales_price'> "+ $("#sales_price").val() +" </td>";
+            row += "<td> <input type='button' id='remove_item' value='Remove'/> </td> </tr>";
 
-        $("#tbl_product").append(row);
+            $("#tbl_product").append(row);
+
+            $("#quantity").val(0);
+            $("#unit_price").val(0);
+            $("#sales_price").val(0);
+        }
     })
 
-    $(document).on('click', '#remove_2', function(){ 
+    $(document).on('click', '#remove_item', function(){ 
         $(this).closest("#tbl_product tr").remove();
     });
+
+    $("#quantity").click(function(){
+        $("#quantity").select();
+    })
+
+    $("#unit_price").click(function(){
+        $("#unit_price").select();
+    })
+
+    $("#sales_price").click(function(){
+        $("#sales_price").select();
+    })
+
+
+    $("#btn_purchase_confirm").click(function(){
+        if(confirm("Are you sure want to purchase?") == true){
+            var status = true;
+            $("#tbl_product .tr_item").each(function() {
+                var product_cat = $(this).find(".cat_name").attr("id"); 
+                var product_brand = $(this).find(".brand_name").attr("id"); 
+                var product_name = $(this).find(".product_name").attr("id"); 
+                var quantity = $(this).find(".quantity").html(); 
+                var unit_price = $(this).find(".unit_price").html(); 
+                var sales_price = $(this).find(".sales_price").html(); 
+                var purchase_invo = $("#purchase_invo").val(); 
+                var purchase_date = $("#purchase_date").val(); 
+                
+
+                $.ajax({
+                    url: '/ajax/purchase-entry/',
+                    method: "POST",
+                    data: {
+                        'product_cat': product_cat,
+                        'product_brand': product_brand,
+                        'product_name': product_name,
+                        'quantity': quantity,
+                        'unit_price': unit_price,
+                        'sales_price': sales_price,
+                        'purchase_invo': purchase_invo,
+                        'purchase_date': purchase_date,
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data == "Success") {
+                            status = true;
+                        }
+                        else{
+                            status = false;
+                        }
+                    }
+                });  
+            });
+            if(status){
+                alert("Purchase Successful");
+            }
+            else{
+                alert("Purchase Not Successful");
+            }
+        }
+    })
+
 </script>
 
 {% endblock %}
