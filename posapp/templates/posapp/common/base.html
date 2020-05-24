@@ -17,7 +17,7 @@
         <link href="{% static 'posapp/bootstrap/css/main.css' %}" rel="stylesheet" type="text/css" id="style_color" />
         <link href="{% static 'posapp/bootstrap/css/style.css' %}" rel="stylesheet" type="text/css" id="style_color" />
         <link href="{% static 'posapp/bootstrap/css/alertbox.css' %}" rel="stylesheet" type="text/css" />
-        <link rel="shortcut icon" href="/static/commonapp/images/" /> 
+        <link rel="shortcut icon" href="#" /> 
     </head>
 
     <body class="page-header-fixed page-sidebar-closed-hide-logo page-content-white">
@@ -75,16 +75,7 @@
                            
                             <li class="sidebar-search-wrapper">     
                                 <div class="sidebar-search"> 
-                                    <a href="javascript:;" class="remove">
-                                        <i class="icon-close"></i>
-                                    </a>
-                                    <div class="input-group">
-                                        <input style="color:#fff;" type="text" id="txt_search_box" class="form-control" placeholder="Search..." value="">
-                                        <span class="input-group-btn">
-                                            <a  href="" id="data_search_box" class="btn submit"></a>
-                                        </span>
-                                    </div>
-                                    <ul id="filter_result" class="page-sidebar-menu  page-header-fixed"> </ul>
+                                    
                                 </div>
                             </li>
                             <li class="nav-item start active open">
@@ -99,48 +90,48 @@
                         <!--Left Side Menus-->
                             <li class="nav-item">
                                 <a href="javascript:;" class="nav-link nav-toggle">
-                                    <i class="fa fa-stethoscope"></i>
+                                    <i class="fa fa-shopping-basket" aria-hidden="true"></i>
                                     <span class="title">Purchase</span>
                                     <span class="arrow"></span>
                                 </a>
                                 <ul class="sub-menu">
                                     <li class="nav-item ">
                                         <a href="/purchase-entry/" class="nav-link ">
-                                            <span class="title"> <i class="icon-settings"></i> Purchase Entry </span>
+                                            <span class="title"> <i class="fa fa-shopping-basket" aria-hidden="true"></i> Purchase Entry </span>
                                         </a>
                                     </li>                                    
                                     <li class="nav-item ">
                                         <a href="/purchase-list/" class="nav-link ">
-                                            <span class="title"> <i class="icon-settings"></i> Purchase List </span>
+                                            <span class="title"> <i class="fa fa-shopping-basket" aria-hidden="true"></i> Purchase List </span>
                                         </a>
                                     </li>                                    
                                     <li class="nav-item ">
                                         <a href="/inventory/" class="nav-link ">
-                                            <span class="title"> <i class="icon-settings"></i> Inventory </span>
+                                            <span class="title"> <i class="fa fa-shopping-basket" aria-hidden="true"></i> Inventory </span>
                                         </a>
                                     </li>                                                                      
                                 </ul>
                             </li>
                             <li class="nav-item">
                                 <a href="javascript:;" class="nav-link nav-toggle">
-                                    <i class="fa fa-stethoscope"></i>
+                                    <i class="fa fa-shopping-cart" aria-hidden="true"></i>
                                     <span class="title">Sales</span>
                                     <span class="arrow"></span>
                                 </a>
                                 <ul class="sub-menu">
                                     <li class="nav-item ">
                                         <a href="/sales-entry/" class="nav-link ">
-                                            <span class="title"> <i class="icon-settings"></i> Sales Entry </span>
+                                            <span class="title"> <i class="fa fa-shopping-cart" aria-hidden="true"></i> Sales Entry </span>
                                         </a>
                                     </li>                                                                      
                                     <li class="nav-item ">
                                         <a href="/sales-order-list/" class="nav-link ">
-                                            <span class="title"> <i class="icon-settings"></i> Sales Order List </span>
+                                            <span class="title"> <i class="fa fa-shopping-cart" aria-hidden="true"></i> Sales Order List </span>
                                         </a>
                                     </li>                                                                      
                                     <li class="nav-item ">
                                         <a href="/sales-list/" class="nav-link ">
-                                            <span class="title"> <i class="icon-settings"></i> Sales List </span>
+                                            <span class="title"> <i class="fa fa-shopping-cart" aria-hidden="true"></i> Sales List </span>
                                         </a>
                                     </li>                                                                      
                                 </ul>
@@ -191,6 +182,11 @@
                                     <li class="nav-item ">
                                         <a href="/settings/discount-info/" class="nav-link ">
                                             <span class="title"> <i class="icon-settings"></i> Discount Info </span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item ">
+                                        <a href="/settings/gift-card-list/" class="nav-link ">
+                                            <span class="title"> <i class="icon-settings"></i> Gift Card List </span>
                                         </a>
                                     </li>
                                 </ul>

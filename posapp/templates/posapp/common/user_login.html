@@ -2,24 +2,29 @@
 <html>
     <head>
         <title>User Login</title>
+        {% load static %} 
+        <link href="{% static 'posapp/bootstrap/css/style.css' %}" rel="stylesheet" type="text/css" id="style_color" />
+        <link href="{% static 'posapp/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />    
     </head>
     <body>
 
         <form method="POST" action="/login/"> {% csrf_token %}
-            <table>
-                <tr>
-                    <th>User Email</th>
-                    <td><input type="text" name="user_email" class="form-control"/></td>
-                </tr>
-                <tr>
-                    <th>Password</th>
-                    <td><input type="password" name="user_pass" class="form-control"/></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td> <input type="submit" value="Login" class="primary"/> </td>
-                </tr>
-            </table>
+            <div class="login_div">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>User Email</th>
+                        <td><input type="text" name="user_email" class="form-control"/></td>
+                    </tr>
+                    <tr>
+                        <th>Password</th>
+                        <td><input type="password" name="user_pass" class="form-control"/></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td> <input type="submit" value="Login" class="primary"/> </td>
+                    </tr>
+                </table>
+            </div>
         </form>
 
     </body>

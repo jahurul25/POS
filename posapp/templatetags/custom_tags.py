@@ -1,4 +1,6 @@
 from django import template  
+from posapp import models
+from django.db.models import Count, Sum
 import requests
 
 register = template.Library()
@@ -8,6 +10,28 @@ register = template.Library()
 def subtract(value1, value2):
     return value1 - value2
 
+@register.filter(name='get_total_discount')
+def get_total_discount(invoice_number):
+    discount = models.InvoiceWiseDiscount.objects.filter(sales_invo = invoice_number).first()
+    if discount:
+        return discount.total_discount
+    else:
+        return 0  
+
+
+@register.filter(name='invoice_wise_grand_total')
+def invoice_wise_grand_total(invoice_number):
+    discount = models.InvoiceWiseDiscount.objects.filter(sales_invo = invoice_number).first()
+    total_discount = 0
+    if discount:
+        total_discount = discount.total_discount
+    
+    grand_total = 0 
+    get_sub_total = models.SalesInfo.objects.filter(sales_invo = invoice_number, sales_complete=False)  
+    for data in get_sub_total:
+        grand_total += ((data.unit_price*data.quantity)+data.total_vat)
+        
+    return grand_total-total_discount    
 
 @register.filter(name='bdt_to_usd')
 def bdt_to_usd(sub_total):
@@ -17,3 +41,4 @@ def bdt_to_usd(sub_total):
         usd = round((sub_total/data["rates"]["BDT"])/data["rates"]["USD"]) 
         return usd 
     else: sub_total
+

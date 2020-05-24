@@ -1,0 +1,50 @@
+{% extends 'posapp/common/base.html' %}
+{% block title %} Gift Card List {% endblock %}
+{% load static %} 
+{% block content %}
+
+<div class="portlet-body form">
+    <div class="row">
+        <div class="portlet light">
+            <div class="page_header">
+                <div class="page_header_left"> Gift Card List </div>
+                <div class="page_header_right">
+                    <a href="/settings/generate-gift-card/">Go to Generate Gift Card</a>
+                </div>
+            </div>
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <p{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <table class="table table-bordered">
+                <tr>
+                    <th class="text-center">SN</th>
+                    <th>Card Number</th>
+                    <th>Gift Amount</th>
+                    <th>Generate Date</th>
+                    <th>Used Date</th>
+                    <th>Status</th>
+                </tr>
+                {% for data in gift_card_list %}
+                    <tr>
+                        <td class="text-center">{{ forloop.counter }}</td>
+                        <td>{{ data.card_number }}</td>
+                        <td>{{ data.gift_amount }}</td> 
+                        <td>{{ data.generate_date|date:"d-M-y" }}</td>
+                        <td>{{ data.used_date|date:"d-M-y" }}</td>
+                        <td> {% if data.status %} Available {% else %} Used {% endif %} </td>
+                    </tr>
+                {% endfor %}
+            </table>
+            
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

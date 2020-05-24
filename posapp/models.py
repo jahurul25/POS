@@ -131,14 +131,35 @@ class DiscountInfo(models.Model):
     def __str__(self):
         return str(self.discount)
       
-# class GiftCard(models.Model):  
-#     from_month       = models.DateTimeField(auto_now_add=False)
-#     to_month         = models.DateTimeField(auto_now_add=False)
-#     from_amount      = models.IntegerField(default=0)   
-#     to_amount        = models.IntegerField(default=0)   
-#     discount         = models.IntegerField(default=0)   
-#     status           = models.BooleanField(default=True)
-
-#     def __str__(self):
-#         return str(self.discount)
+class GiftCard(models.Model):  
+    card_number      = models.IntegerField(default=0)   
+    gift_amount      = models.IntegerField(default=0)   
+    generate_date    = models.DateTimeField(auto_now_add=True)
+    used_date        = models.DateTimeField(auto_now_add=False, blank=True, null=True)
+    status           = models.BooleanField(default=True)
+    def __str__(self):
+        return str(self.gift_amount)
+    
+      
+class InvoiceWiseDiscount(models.Model):  
+    sales_invo       = models.IntegerField(default=0)   
+    total_discount   = models.IntegerField(default=0)   
+    added_date       = models.DateTimeField(auto_now_add=True)
+    status           = models.BooleanField(default=True)
+    def __str__(self):
+        return str(self.total_discount)
+    
+      
+class SalesPaymentInfo(models.Model):  
+    sales_invo       = models.IntegerField(default=0)   
+    total_amount     = models.IntegerField(default=0)   
+    cash_amount      = models.IntegerField(default=0)   
+    gift_card_amount = models.IntegerField(default=0)   
+    card_number      = models.IntegerField(default=0)   
+    payment_method   = models.CharField(max_length=50)   
+    confirm_by       = models.ForeignKey(UserList, on_delete=models.CASCADE)
+    added_date       = models.DateTimeField(auto_now_add=True)
+    status           = models.BooleanField(default=True)
+    def __str__(self):
+        return str(self.total_amount)
     

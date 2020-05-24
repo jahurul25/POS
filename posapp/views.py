@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.db.models import F
 import json, hashlib, requests
 from posapp.templatetags import custom_tags
+from django.db.models import Count  
 
 # Create your views here.
 
@@ -19,7 +20,7 @@ def user_login(request):
             user_pass  = request.POST["user_pass"].strip()
              
             encrypt_pass   = hashlib.md5(user_pass.encode()).hexdigest()
-            
+
             chk_user_login = models.UserList.objects.filter(user_email=user_email, user_pass=encrypt_pass, status=True).first()
             if chk_user_login:
                 request.session["userid"] = chk_user_login.pk
@@ -248,7 +249,7 @@ def sales_entry(request):
 def sales_list(request): 
     if request.session["userid"]: 
         if request.method == "GET": 
-            sales_list = models.SalesInfo.objects.order_by("-sales_invo")
+            sales_list = models.SalesInfo.objects.filter(sales_complete=True).order_by("-sales_invo")
             product_list  = models.ProductInfo.objects.filter(status=True)
             context = { 
                 "sales_list": sales_list,
@@ -257,7 +258,7 @@ def sales_list(request):
             return render(request, "posapp/common/sales_list.html", context)
         else: 
             product_name  = int(request.POST["product_name"])
-            sales_list = models.SalesInfo.objects.filter(product_name_id = product_name).order_by("-sales_invo")
+            sales_list = models.SalesInfo.objects.filter(sales_complete=True, product_name_id = product_name).order_by("-sales_invo")
             product_list  = models.ProductInfo.objects.filter(status=True)
             context = { 
                 "product_name": product_name,
@@ -268,25 +269,26 @@ def sales_list(request):
     else:
         return redirect("user_logout") 
     
-    
+  
 def sales_order_list(request): 
     if request.session["userid"]: 
         if request.method == "GET": 
-            sales_list = models.SalesInfo.objects.order_by("-sales_invo")
-            product_list  = models.ProductInfo.objects.filter(status=True)
+            sales_list = models.SalesInfo.objects.filter(sales_complete = False).order_by("-sales_invo")
+             
+            invoice_list  = models.SalesInfo.objects.values('sales_invo').annotate(dcount=Count('sales_invo')).filter(sales_complete = False, status=True).order_by("-sales_invo")
             context = { 
                 "sales_list": sales_list,
-                "product_list": product_list,
+                "invoice_list": invoice_list,
             }
             return render(request, "posapp/common/sales_order_list.html", context)
         else: 
-            product_name  = int(request.POST["product_name"])
-            sales_list = models.SalesInfo.objects.filter(product_name_id = product_name).order_by("-sales_invo")
-            product_list  = models.ProductInfo.objects.filter(status=True)
+            sales_invo  = int(request.POST["sales_invo"])
+            sales_list  = models.SalesInfo.objects.filter(sales_invo = sales_invo, sales_complete = False).order_by("-sales_invo")
+            invoice_list  = models.SalesInfo.objects.values('sales_invo').annotate(dcount=Count('sales_invo')).filter(sales_complete = False, status=True).order_by("-sales_invo")
             context = { 
-                "product_name": product_name,
+                "sales_invo": sales_invo,
                 "sales_list": sales_list,
-                "product_list": product_list,
+                "invoice_list": invoice_list,
             }
             return render(request, "posapp/common/sales_order_list.html", context)
     else:
@@ -300,6 +302,99 @@ def discount_info(request):
                 "discount_list": discount_list, 
             }
             return render(request, "posapp/settings/discount_info.html", context) 
+    else:
+        return redirect("user_logout") 
+    
+    
+def cancel_sales_order(request, invoice_num): 
+    if request.session["userid"]: 
+        if request.method == "GET": 
+            models.SalesInfo.objects.filter(sales_invo = invoice_num).delete() 
+            return redirect("sales_order_list") 
+    else:
+        return redirect("user_logout") 
+    
+def confirm_sales_order(request, invoice_num): 
+    if request.session["userid"]: 
+        if request.method == "GET": 
+            sales_list = models.SalesInfo.objects.filter(sales_invo = invoice_num)
+            total_price = 0
+            for data in sales_list:
+                total_price += data.unit_price + data.total_vat
+                
+            context = {
+                "sales_invo": invoice_num,
+                "total_price": total_price,
+                "sales_list": sales_list
+            }
+            return render(request, "posapp/common/confirm_sales_order.html", context)
+        else:
+            payment_method = request.POST["payment_method"]
+            card_number    = request.POST["card_number"]
+            cash_amount    = int(float(request.POST["cash_amount"]))
+            
+            if len(card_number)==0:
+                card_number = 0
+            
+            gift_card_amount = 0
+            gift_card = models.GiftCard.objects.filter(card_number = card_number, status = True).first()
+            if gift_card:
+                gift_card_amount = gift_card.gift_amount
+           
+            total_amount = custom_tags.invoice_wise_grand_total(invoice_num)
+             
+            payment = models.SalesPaymentInfo.objects.create(
+                sales_invo = invoice_num, total_amount = total_amount, cash_amount = cash_amount, gift_card_amount = gift_card_amount,
+                card_number = card_number, payment_method = payment_method, confirm_by_id = request.session["userid"]
+            )
+            if payment:
+                models.SalesInfo.objects.filter(sales_invo = invoice_num).update(sales_complete = True)
+                models.GiftCard.objects.filter(card_number = card_number, status = True).update(status = False, used_date = datetime.now().date())
+                
+                sales_product = models.SalesInfo.objects.filter(sales_invo = invoice_num)
+                for data in sales_product:
+                    chk_exist = models.ProductInventory.objects.filter(product_cat_id = data.product_cat, product_brand_id = data.product_brand, product_name_id = data.product_name).first()
+                    if chk_exist:
+                        models.ProductInventory.objects.filter(pk = chk_exist.pk).update(current_quantity = F("current_quantity")-data.quantity)
+                    
+            return redirect("sales_order_list")    
+    else:
+        return redirect("user_logout") 
+    
+def generate_gift_card(request): 
+    if request.session["userid"]: 
+        if request.method == "GET": 
+            return render(request, "posapp/settings/generate_gift_card.html")
+        else:
+            gift_amount   = int(request.POST["gift_amount"])
+            card_quantity = int(request.POST["card_quantity"])
+            
+            card_number = 1000001
+            max_card_number = models.GiftCard.objects.order_by("-card_number").first()
+            if max_card_number:
+                card_number = max_card_number.card_number+1
+                    
+            for data in range(card_quantity):
+                chk_exist = models.GiftCard.objects.filter(card_number = card_number)
+                if chk_exist:
+                    card_number += 1
+                else:    
+                    models.GiftCard.objects.create(card_number = card_number, gift_amount = gift_amount)
+                    card_number += 1
+                
+            return redirect("gift_card_list") 
+    else:
+        return redirect("user_logout") 
+    
+    
+def gift_card_list(request): 
+    if request.session["userid"]: 
+        if request.method == "GET": 
+            gift_card_list = models.GiftCard.objects.all()
+            context = {
+                "gift_card_list": gift_card_list
+            }
+            return render(request, "posapp/settings/gift_card_list.html", context)
     else:
         return redirect("user_logout") 
     
@@ -364,22 +459,26 @@ def sales_entry_by_ajax(request):
             quantity        = request.POST.get("quantity")
             unit_price      = request.POST.get("unit_price").strip().split(" ") 
             sales_invo      = request.POST.get("sales_invo") 
+            total_discount  = request.POST.get("total_discount") 
             
             if request.session["user_country"] == "USA":
                 total_vat       = ((float(unit_price[1]) * float(quantity)) * 7.0)/100
             else:    
                 total_vat       = ((float(unit_price[1]) * float(quantity)) * 5.0)/100              
                              
-            models.SalesInfo.objects.create(
+            get_invo = models.SalesInfo.objects.create(
                 product_cat_id = product_cat, product_brand_id = product_brand, product_name_id = product_name, quantity = quantity,
                 unit_price = unit_price[1], total_vat = total_vat, sales_invo = sales_invo, sales_by_id = request.session["userid"]
             )
-            return JsonResponse("Success", safe=False)
-        
-            # chk_exist = models.ProductInventory.objects.filter(product_cat_id = product_cat, product_brand_id = product_brand, product_name_id = product_name).first()
-            # if chk_exist:
-            #     models.ProductInventory.objects.filter(pk = chk_exist.pk).update(current_quantity = F("current_quantity")-quantity)
-            #     return JsonResponse("Success", safe=False)
+            if get_invo:
+                chk_exist = models.InvoiceWiseDiscount.objects.filter(sales_invo = sales_invo)
+                if chk_exist:
+                    models.InvoiceWiseDiscount.objects.filter(sales_invo = sales_invo).update(total_discount = total_discount)
+                else:
+                    models.InvoiceWiseDiscount.objects.create(sales_invo = sales_invo, total_discount = total_discount)
+                return JsonResponse("Success", safe=False)
+            else: 
+                return JsonResponse("Failed", safe=False)
     else:
         return redirect("user_logout")   
     
@@ -412,4 +511,15 @@ def discount_calculation_by_ajax(request):
         else:
             discount = 0
         return JsonResponse(str(discount), safe=False)
+    
+def check_valid_gift_card_number_by_ajax(request):
+    if request.is_ajax(): 
+        card_number  = request.GET.get("card_number")  
+        chk_valid_card = models.GiftCard.objects.filter(card_number = card_number, status=True).first()
+
+        if chk_valid_card:
+            return JsonResponse(str(chk_valid_card.gift_amount), safe=False)
+        else:
+            return JsonResponse(str(0), safe=False)
+        
             

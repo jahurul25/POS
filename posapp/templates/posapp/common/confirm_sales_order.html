@@ -1,5 +1,5 @@
 {% extends 'posapp/common/base.html' %}
-{% block title %} Sales Order List {% endblock %}
+{% block title %} Confirm Sales Order {% endblock %}
 {% load static %} 
 {% load mathfilters %}
 {% load custom_tags %}
@@ -10,28 +10,13 @@
     <div class="row">
         <div class="portlet light">
             <div class="page_header">
-                <div class="page_header_left">Sales Order List</div>
+                <div class="page_header_left">Confirm Sales Order</div>
                 <div class="page_header_right">
-                    <a href="/inventory/">Go to Inventory</a>
+                    <a href="/sales-order-list/">Go to Sales Order List</a>
                 </div>
             </div>
             
-            <form method="POST">{% csrf_token %}
-                <table class="table table-bordered">
-                    <tr>
-                        <th>Invoice Number</th>
-                        <td>
-                            <select name="sales_invo" class="form-control">
-                                {% for data in invoice_list %}
-                                    <option value="{{ data.sales_invo }}" {% if data.sales_invo == sales_invo %} selected {% endif %}> {{ data.sales_invo }} </option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                        <td><input type="submit" value="Search" class="btn btn-primary"/></td>
-                    </tr>
-                </table>
-            </form>
-
+           
             <table class="table table-bordered">
                 <tr> 
                     <th>Invoice</th>
@@ -41,7 +26,7 @@
                     <th class="text-center">Quantity</th>
                     <th>Unit Price</th>
                     <th>Vat</th>
-                    <th>Unit Total Price</th>
+                    <th>Total Price</th>
                     <th>Added Date</th>
                     <th>Sales By</th> 
                 </tr>
@@ -80,25 +65,69 @@
                                 <td> {{ data.sales_by }} </td>
                             </tr>
                         {% endfor %}
-                    </tr> 
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td> 
-                        <th colspan="2">Total Discount: {{ group.grouper|get_total_discount }} </th>
-                        <td></td>
-                        <th>Grand Total: {{ group.grouper|invoice_wise_grand_total }}</th>
-                        <td><a href="/{{ group.grouper }}/confirm-sales-order/" style="border: 1px solid gray; padding:5px;">Confirm Order</a></td>
-                        <td>
-                            <a href="/{{ group.grouper }}/cancel-sales-order/" onclick="return confirm('Are you sure cancel this order?')" style="border: 1px solid gray; padding:5px;">Cancel Order</a>
-                        </td>
                     </tr>
                 {% endfor %}
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th>Total Discount: {{ sales_invo|get_total_discount }}</th>
+                    <th></th>
+                    <th></th>
+                </tr>
             </table>
-            
+
+            <form method="POST">{% csrf_token %}
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Total Price</th>
+                        <th>Payment Method</th>
+                        <th id="th_card_amount">Gift Card</th>
+                        <th>Cash Amount</th>
+                        <th></th>
+                    </tr>
+                    <tr>    
+                        <th>{{ sales_invo|invoice_wise_grand_total }}</th>
+                        <td>
+                            <select name="payment_method" class="form-control">
+                                <option value="Cash">Cash</option>
+                                <option value="Gift Card">Gift Card</option>
+                                <option value="Cash & Gift Card">Cash & Gift Card</option>
+                            </select>
+                        </td> 
+                        <td><input type="number" name="card_number" id="card_number" class="form-control"/></td>
+                        <td><input type="number" name="cash_amount" value="0" class="form-control"/></td>
+                        <td><input type="submit" value="Confirm Sales" class="btn btn-primary"/> </td>
+                    </tr>
+                </table>
+            </form>
         </div>
     </div>
 </div>
 
+
+{% block js_script %}
+
+<script type="text/javascript">
+
+    $("#card_number").change(function(){
+        $.ajax({
+            url: '/ajax/check-valid-gift-card-number/',
+            method: "GET",
+            data: { 
+                'card_number': $("#card_number").val()
+            },
+            dataType: 'json',
+            success: function (data) {
+                $("#th_card_amount").html("Gift Card: "+data);
+            }
+        });   
+    })
+
+</script>    
+{% endblock %}
 
 {% endblock %}

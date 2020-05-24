@@ -15,9 +15,9 @@
 
             <table class="table table-bordered">
                 <tr>
-                    <th>Invoice</th>
+                    <th class="vertical_middle">Invoice</th>
                     <td><input type="text" id="sales_invo" value="{{ sales_invo }}" class="form-control" required/></td>
-                    <th>Category</th>
+                    <th class="vertical_middle">Category</th>
                     <td>
                         <select id="product_cat" class="form-control">
                             {% for data in cat_list %}
@@ -25,7 +25,7 @@
                             {% endfor %}
                         </select>
                     </td>
-                    <th>Brand</th>
+                    <th class="vertical_middle">Brand</th>
                     <td>
                         <select id="product_brand" class="form-control">
                             {% for data in brand_list %}
@@ -35,7 +35,7 @@
                     </td>
                 </tr>
                 <tr> 
-                    <th>Product Name</th>
+                    <th class="vertical_middle">Product Name</th>
                     <td>
                         <select id="product_name" class="form-control">
                             <option value="0">--Select Product--</option> 
@@ -44,15 +44,15 @@
                             {% endfor %}
                         </select>
                     </td>
-                    <th>Unit Price</th>
+                    <th class="vertical_middle">Unit Price</th>
                     <td><input type="number" id="unit_price" value="0" class="form-control" required readonly/></td>
-                    <th>Quantity</th>
+                    <th class="vertical_middle">Quantity</th>
                     <td><input type="number" id="quantity" value="0" class="form-control" required/></td>
                 </tr>
                 <tr>
                     <td> <input type="hidden" value="{{ vat }}" id="vat"/> </td>
-                    <td> <input type="hidden" value="0" id="hid_discount"/> </td>
-                    <td></td>
+                    <td> <input type="hidden" value="0" id="total_discount"/> </td>
+                    <td> </td>
                     <td></td>
                     <td></td>
                     <td>
@@ -154,8 +154,22 @@
             },
             dataType: 'json',
             success: function (data) {
-                $("#th_discount").html("Discount: "+data+"%");
-                $("#hid_discount").val(data);
+                $("#th_discount").html("Discount: "+data+"%"); 
+                
+                
+                $("#th_sub_total").html("Sub Total: " + currency+ " "+ sub_total);
+                $("#th_vat").html("Vat: "+ $("#vat").val()+"%");
+
+
+                var total_discount = ((sub_total * parseInt(data))/100);
+                $("#total_discount").val(total_discount);
+
+                var sub_total_with_discount = ((sub_total * parseInt($("#th_discount").html().match(/\d+/)))/100)+sub_total;
+                var grand_total = ((sub_total_with_discount * parseInt($("#vat").val()))/100)+sub_total_with_discount;
+                $("#th_grand_total").html("Grand Total: " + currency +" "+grand_total);
+                if(sub_total == 0){
+                    $("#tr_footer").remove();
+                }
             }
         }); 
     }
@@ -167,17 +181,6 @@
         })
         
         discount_calculation(sub_total);
-
-        $("#th_sub_total").html("Sub Total: " + currency+ " "+ sub_total);
-        $("#th_vat").html("Vat: "+ $("#vat").val()+"%");
-
-        var sub_total_with_discount = ((sub_total * parseInt($("#hid_discount").val()))/100)+sub_total;
-        var grand_total = ((sub_total_with_discount * parseInt($("#vat").val()))/100)+sub_total_with_discount;
-        $("#th_grand_total").html("Grand Total: " + currency +" "+grand_total);
-
-        if(sub_total == 0){
-            $("#tr_footer").remove();
-        }
     }
 
     $(document).on('click', '#remove_item', function(){ 
@@ -224,7 +227,7 @@
     });
 
     $(document).on('click', '#btn_sales_confirm', function(){ 
-        if(confirm("Are you sure want to sales?") == true){
+        if(confirm("Are you sure want to sales order?") == true){
             var status = true;
             $("#tbl_product .tr_item").each(function() {
                 var product_cat = $(this).find(".cat_name").attr("id"); 
@@ -233,6 +236,7 @@
                 var quantity = $(this).find(".quantity").html(); 
                 var unit_price = $(this).find(".unit_price").html();  
                 var sales_invo = $("#sales_invo").val();  
+                var total_discount = $("#total_discount").val();  
                 
                 $.ajax({
                     url: '/ajax/sales-entry/',
@@ -244,6 +248,7 @@
                         'quantity': quantity,
                         'unit_price': unit_price, 
                         'sales_invo': sales_invo, 
+                        'total_discount': total_discount, 
                         csrfmiddlewaretoken: '{{ csrf_token }}',
                     },
                     dataType: 'json',
@@ -259,6 +264,7 @@
             });
             if(status){
                 alert("Sales Successful");
+                location.reload();
             }
             else{
                 alert("Sales Not Successful");

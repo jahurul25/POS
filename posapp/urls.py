@@ -11,6 +11,8 @@ urlpatterns = [
     path('user-profile/', views.user_profile, name="user_profile"),
     path('user-list/', views.user_list, name="user_list"),
     path('user-registration/', views.user_registration, name="user_registration"),
+    path('settings/generate-gift-card/', views.generate_gift_card, name="generate_gift_card"),
+    path('settings/gift-card-list/', views.gift_card_list, name="gift_card_list"),
     path('settings/country-list/', views.country_list, name="country_list"),
     path('settings/year-list/', views.year_list, name="year_list"),
     path('settings/company-setup/', views.company_setup, name="company_setup"),
@@ -27,10 +29,13 @@ urlpatterns = [
     path('sales-order-list/', views.sales_order_list, name="sales_order_list"),
     path('inventory/', views.inventory, name="inventory"),
     path('settings/discount-info/', views.discount_info, name="discount_info"),
+    path('<int:invoice_num>/cancel-sales-order/', views.cancel_sales_order, name="cancel_sales_order"),
+    path('<int:invoice_num>/confirm-sales-order/', views.confirm_sales_order, name="confirm_sales_order"),
     
     path('ajax/purchase-entry/', views.purchase_entry_by_ajax, name="purchase_entry_by_ajax"),
     path('ajax/sales-entry/', views.sales_entry_by_ajax, name="sales_entry_by_ajax"),
     path('ajax/get-product-salse-price/', views.get_product_salse_price_by_ajax, name="get_product_salse_price_by_ajax"),
     path('ajax/discount-calculation/', views.discount_calculation_by_ajax, name="discount_calculation_by_ajax"),
+    path('ajax/check-valid-gift-card-number/', views.check_valid_gift_card_number_by_ajax, name="check_valid_gift_card_number_by_ajax"),
 ]
 

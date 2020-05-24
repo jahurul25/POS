@@ -23,6 +23,10 @@
     border-radius: 60px!important;
 }
 
+.vertical_middle{
+    vertical-align: middle;
+}
+
 .textbox_to_label
 {
     border:none;
@@ -225,3 +229,12 @@
 	visibility:visible;
 }
 .clone thead, .clone tfoot{background:transparent;}
+
+.login_div{
+    width: 400px;
+    height: 200px; 
+    padding: 10px;
+    overflow: auto;
+    margin-top: 100px;
+    margin-left: 37%;
+}

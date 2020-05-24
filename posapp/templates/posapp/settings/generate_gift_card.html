@@ -1,0 +1,33 @@
+{% extends 'posapp/common/base.html' %}
+{% block title %} Gift Card Generate {% endblock %}
+{% load static %} 
+{% block content %}
+
+<div class="portlet-body form">
+    <div class="row">
+        <div class="portlet light">
+            <div class="page_header">
+                <div class="page_header_left"> Gift Card List </div>
+                <div class="page_header_right">
+                    <a href="/settings/gift-card-list/">Go to Gift Card List</a>
+                </div>
+            </div>
+             
+            <form method="POST">{% csrf_token %}
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Gift Amount</th>
+                        <td><input type="number" name="gift_amount" class="form-control" placeholder="Please input gift amount" /> </td>
+                        <th>Card Quantity</th>
+                        <td><input type="number" name="card_quantity" class="form-control" placeholder="Please input card quantity" /> </td>
+                        <td><input type="submit" value="Generate Gift Card" class="btn btn-primary"/> </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
