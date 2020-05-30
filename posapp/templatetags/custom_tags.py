@@ -38,7 +38,11 @@ def bdt_to_usd(sub_total):
     response = requests.post('http://data.fixer.io/api/latest?access_key=e7546ef7cada53aeea71524d9176e113&format=1') 
     if response.status_code == 200:
         data = response.json()
-        usd = round((sub_total/data["rates"]["BDT"])/data["rates"]["USD"]) 
+        usd = round((sub_total/data["rates"]["BDT"])*data["rates"]["USD"]) 
+        print("sub_total: ", sub_total)
+        print("BDT:", data["rates"]["BDT"])
+        print("USD:", data["rates"]["USD"])
+        print("usd: ", usd)
         return usd 
     else: sub_total
 

@@ -249,7 +249,7 @@ def sales_entry(request):
 def sales_list(request): 
     if request.session["userid"]: 
         if request.method == "GET": 
-            sales_list = models.SalesInfo.objects.filter(sales_complete=True).order_by("-sales_invo")
+            sales_list = models.SalesInfo.objects.filter(sales_by_id = request.session["userid"], sales_complete=True).order_by("-sales_invo")
             product_list  = models.ProductInfo.objects.filter(status=True)
             context = { 
                 "sales_list": sales_list,
@@ -258,7 +258,7 @@ def sales_list(request):
             return render(request, "posapp/common/sales_list.html", context)
         else: 
             product_name  = int(request.POST["product_name"])
-            sales_list = models.SalesInfo.objects.filter(sales_complete=True, product_name_id = product_name).order_by("-sales_invo")
+            sales_list = models.SalesInfo.objects.filter(sales_by_id = request.session["userid"], sales_complete=True, product_name_id = product_name).order_by("-sales_invo")
             product_list  = models.ProductInfo.objects.filter(status=True)
             context = { 
                 "product_name": product_name,
@@ -273,9 +273,9 @@ def sales_list(request):
 def sales_order_list(request): 
     if request.session["userid"]: 
         if request.method == "GET": 
-            sales_list = models.SalesInfo.objects.filter(sales_complete = False).order_by("-sales_invo")
+            sales_list = models.SalesInfo.objects.filter(sales_by_id = request.session["userid"], sales_complete = False).order_by("-sales_invo")
              
-            invoice_list  = models.SalesInfo.objects.values('sales_invo').annotate(dcount=Count('sales_invo')).filter(sales_complete = False, status=True).order_by("-sales_invo")
+            invoice_list  = models.SalesInfo.objects.values('sales_invo').annotate(dcount=Count('sales_invo')).filter(sales_by_id = request.session["userid"], sales_complete = False, status=True).order_by("-sales_invo")
             context = { 
                 "sales_list": sales_list,
                 "invoice_list": invoice_list,
@@ -283,8 +283,8 @@ def sales_order_list(request):
             return render(request, "posapp/common/sales_order_list.html", context)
         else: 
             sales_invo  = int(request.POST["sales_invo"])
-            sales_list  = models.SalesInfo.objects.filter(sales_invo = sales_invo, sales_complete = False).order_by("-sales_invo")
-            invoice_list  = models.SalesInfo.objects.values('sales_invo').annotate(dcount=Count('sales_invo')).filter(sales_complete = False, status=True).order_by("-sales_invo")
+            sales_list  = models.SalesInfo.objects.filter(sales_by_id = request.session["userid"], sales_invo = sales_invo, sales_complete = False).order_by("-sales_invo")
+            invoice_list  = models.SalesInfo.objects.values('sales_invo').annotate(dcount=Count('sales_invo')).filter(sales_by_id = request.session["userid"], sales_complete = False, status=True).order_by("-sales_invo")
             context = { 
                 "sales_invo": sales_invo,
                 "sales_list": sales_list,
@@ -459,12 +459,12 @@ def sales_entry_by_ajax(request):
             quantity        = request.POST.get("quantity")
             unit_price      = request.POST.get("unit_price").strip().split(" ") 
             sales_invo      = request.POST.get("sales_invo") 
-            total_discount  = request.POST.get("total_discount") 
+            total_discount  = request.POST.get("total_discount")  
             
             if request.session["user_country"] == "USA":
-                total_vat       = ((float(unit_price[1]) * float(quantity)) * 7.0)/100
+                total_vat       = (((float(unit_price[1]) * float(quantity))-float(total_discount)) * 7.0)/100
             else:    
-                total_vat       = ((float(unit_price[1]) * float(quantity)) * 5.0)/100              
+                total_vat       = (((float(unit_price[1]) * float(quantity))-float(total_discount)) * 5.0)/100                 
                              
             get_invo = models.SalesInfo.objects.create(
                 product_cat_id = product_cat, product_brand_id = product_brand, product_name_id = product_name, quantity = quantity,

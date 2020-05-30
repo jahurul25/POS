@@ -162,9 +162,8 @@
 
 
                 var total_discount = ((sub_total * parseInt(data))/100);
-                $("#total_discount").val(total_discount);
-
-                var sub_total_with_discount = ((sub_total * parseInt($("#th_discount").html().match(/\d+/)))/100)+sub_total;
+                $("#total_discount").val(total_discount); 
+                var sub_total_with_discount = (sub_total - total_discount); 
                 var grand_total = ((sub_total_with_discount * parseInt($("#vat").val()))/100)+sub_total_with_discount;
                 $("#th_grand_total").html("Grand Total: " + currency +" "+grand_total);
                 if(sub_total == 0){

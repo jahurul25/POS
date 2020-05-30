@@ -56,21 +56,21 @@
                                 <td>{{ data.product_name }}</td>
                                 <td class="text-center">{{ data.quantity }}</td>
                                 <td>
-                                    {% if request.session.user_county == "USA" %}
+                                    {% if request.session.user_country == "USA" %}
                                         ${{ data.unit_price }}
                                     {% else %}
                                         BDT {{ data.unit_price }}
                                     {% endif %}   
                                 </td>
                                 <td>
-                                    {% if request.session.user_county == "USA" %}
+                                    {% if request.session.user_country == "USA" %}
                                         ${{ data.total_vat }}
                                     {% else %}
                                         BDT {{ data.total_vat }}
                                     {% endif %}   
                                 </td>
                                 <td>
-                                    {% if request.session.user_county == "USA" %}
+                                    {% if request.session.user_country == "USA" %}
                                         ${{ data.unit_price|mul:data.quantity|add:data.total_vat }}
                                     {% else %}
                                         BDT {{ data.unit_price|mul:data.quantity|add:data.total_vat }}
